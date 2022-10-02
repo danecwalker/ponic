@@ -20,7 +20,15 @@
     <br> 
 </p>
 
+`Hello World`
 
+![Hello](./images/hello.png)
+
+`Greet`
+
+![Greet](./images/greet.png)
+
+![Fib](./images/fib.png)
 
 ## 📝 Table of Contents
 
