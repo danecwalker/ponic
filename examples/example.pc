@@ -1,0 +1,11 @@
+let z = 5
+
+const println = fn(str) {
+  print(str, "\n")
+} 
+
+fn main(a, b) {
+  return a + b
+}
+
+println(main(10, 10))
