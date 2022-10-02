@@ -2,7 +2,7 @@ fn println(str) {
   print(str, "\n")
 }
 
-const nterms = 20
+const nterms = int(scan("How many terms? "))
 
 print("Fibonacci sequence for ", nterms, " terms:", "\n")
 
