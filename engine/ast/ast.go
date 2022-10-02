@@ -188,11 +188,12 @@ func (ce *CallExpression) String() string {
 }
 
 type ForExpression struct {
-	Token       *lexer.Token
-	Initializer *LetStatement
-	Condition   Expression
-	Post        *ExpressionStatement
-	Body        *BlockStatement
+	Token         *lexer.Token
+	Initializer   *LetStatement
+	Condition     Expression
+	Post          *ExpressionStatement
+	Body          *BlockStatement
+	ConditionOnly bool
 }
 
 func (fe *ForExpression) expressionNode() {}

@@ -330,18 +330,22 @@ func runForExpression(fe *ast.ForExpression, s *object.Scope) object.Object {
 	scope := object.NewScope()
 	scope.Parent = s
 	var result object.Object
-	Run(fe.Initializer, scope)
+	if !fe.ConditionOnly {
+		Run(fe.Initializer, scope)
+	}
 	for {
 		condition := Run(fe.Condition, scope)
 		if !isTruthy(condition) {
 			break
 		}
 
-		Run(fe.Post, scope)
-
 		result = Run(fe.Body, scope)
 		if _, ok := result.(*object.ReturnValue); ok {
 			break
+		}
+
+		if !fe.ConditionOnly {
+			Run(fe.Post, scope)
 		}
 	}
 	return &object.Null{}

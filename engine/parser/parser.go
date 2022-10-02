@@ -453,27 +453,29 @@ func (p *parser) parseCallArguments() []ast.Expression {
 }
 
 func (p *parser) parseForExpression() ast.Expression {
-	exp := &ast.ForExpression{Token: p.curToken}
+	exp := &ast.ForExpression{Token: p.curToken, ConditionOnly: false}
 
 	if !p.isNext(lexer.LPAREN) {
 		return nil
 	}
 	p.eat()
 
-	if !p.isNext(lexer.LET) {
-		return nil
+	if p.next().Type == lexer.LET {
+
+		exp.Initializer = p.parseLetStatement()
+
+		exp.Condition = p.parseExpression(LOWEST)
+
+		if !p.isNext(lexer.SEMICOLON) {
+			return nil
+		}
+		p.eat()
+
+		exp.Post = p.parseExpressionStatement()
+	} else {
+		exp.ConditionOnly = true
+		exp.Condition = p.parseExpression(LOWEST)
 	}
-
-	exp.Initializer = p.parseLetStatement()
-
-	exp.Condition = p.parseExpression(LOWEST)
-
-	if !p.isNext(lexer.SEMICOLON) {
-		return nil
-	}
-	p.eat()
-
-	exp.Post = p.parseExpressionStatement()
 
 	if !p.isNext(lexer.RPAREN) {
 		return nil
