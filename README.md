@@ -28,12 +28,14 @@
 
 ![Greet](./images/greet.png)
 
+`Fibonacci Sequence`
+
 ![Fib](./images/fib.png)
 
 ## 📝 Table of Contents
 
 - [Getting Started](#getting_started)
-<!-- - [Roadmap](#roadmap) -->
+- [Roadmap](#roadmap)
 - [Authors](#authors)
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
@@ -59,9 +61,9 @@ Run the compiler (currently uses the ./examples/example.pc)
 ```
 go run .
 ```
-<!-- 
+
 ## Roadmap
-![Ponic Roadmap](./images/roadmap.png) -->
+![Ponic Roadmap](./images/roadmap.png)
 
 ## ✍️ Authors <a name = "authors"></a>
 
