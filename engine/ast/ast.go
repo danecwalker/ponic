@@ -186,3 +186,16 @@ func (ce *CallExpression) expressionNode() {}
 func (ce *CallExpression) String() string {
 	return fmt.Sprintf("CallExpression(%s, %s)", ce.Function, ce.Arguments)
 }
+
+type ForExpression struct {
+	Token       *lexer.Token
+	Initializer *LetStatement
+	Condition   Expression
+	Post        *ExpressionStatement
+	Body        *BlockStatement
+}
+
+func (fe *ForExpression) expressionNode() {}
+func (fe *ForExpression) String() string {
+	return fmt.Sprintf("ForExpression(%s, %s)", fe.Condition, fe.Body)
+}

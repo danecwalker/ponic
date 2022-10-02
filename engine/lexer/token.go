@@ -38,13 +38,18 @@ const (
 	STRING // "hello world"
 
 	// Operators
-	ASSIGN // =
-	PLUS   // +
-	MINUS  // -
-	BANG   // !
-	ASTER  // *
-	SLASH  // /
-	MOD    // %
+	ASSIGN       // =
+	PLUS         // +
+	MINUS        // -
+	BANG         // !
+	ASTER        // *
+	SLASH        // /
+	MOD          // %
+	PLUS_ASSIGN  // +=
+	MINUS_ASSIGN // -=
+	ASTER_ASSIGN // *=
+	SLASH_ASSIGN // /=
+	MOD_ASSIGN   // %=
 
 	LT // <
 	GT // >
@@ -71,6 +76,7 @@ const (
 	FALSE    // false
 	IF       // if
 	ELSE     // else
+	FOR      // for
 	RETURN   // return
 )
 
@@ -82,13 +88,18 @@ var TokenMap = [...]string{
 	INT:    "INT",
 	STRING: "STRING",
 
-	ASSIGN: "=",
-	PLUS:   "+",
-	MINUS:  "-",
-	BANG:   "!",
-	ASTER:  "*",
-	SLASH:  "/",
-	MOD:    "%",
+	ASSIGN:       "=",
+	PLUS:         "+",
+	MINUS:        "-",
+	BANG:         "!",
+	ASTER:        "*",
+	SLASH:        "/",
+	MOD:          "%",
+	PLUS_ASSIGN:  "+=",
+	MINUS_ASSIGN: "-=",
+	ASTER_ASSIGN: "*=",
+	SLASH_ASSIGN: "/=",
+	MOD_ASSIGN:   "%=",
 
 	LT: "<",
 	GT: ">",
@@ -113,6 +124,7 @@ var TokenMap = [...]string{
 	FALSE:    "FALSE",
 	IF:       "IF",
 	ELSE:     "ELSE",
+	FOR:      "FOR",
 	RETURN:   "RETURN",
 }
 
@@ -128,5 +140,6 @@ var keywords = map[string]TokenType{
 	"false":  FALSE,
 	"if":     IF,
 	"else":   ELSE,
+	"for":    FOR,
 	"return": RETURN,
 }

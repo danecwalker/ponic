@@ -39,8 +39,13 @@ func (s *Scope) Get(name string) (Object, bool) {
 
 func (s *Scope) Set(name string, val Object, bindType BindType) {
 	bind, ok := s.Values[name]
-	if ok && bind.Type == CONST {
-		panic("Cannot reassign constant")
+	if ok {
+		if bind.Type == CONST {
+			panic("Cannot reassign constant")
+		} else {
+			s.Values[name] = ValueBinding{val, bind.Type}
+		}
+	} else {
+		s.Values[name] = ValueBinding{val, bindType}
 	}
-	s.Values[name] = ValueBinding{val, bindType}
 }

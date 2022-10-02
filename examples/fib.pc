@@ -1,0 +1,27 @@
+fn println(str) {
+  print(str, "\n")
+}
+
+const nterms = 20
+
+print("Fibonacci sequence for ", nterms, " terms:", "\n")
+
+let na = 0
+let nb = 1
+
+if (nterms <= 0) {
+  println("Please use a positive integer")
+} else {
+  if (nterms == 1) {
+    print("Fibonacci sequence up to ", nterms, ":", "\n")
+    println(na)
+  } else {
+    println("Fibonacci sequence:")
+    for (let count = 0; count < nterms; count += 1) {
+      println(na)
+      let nth = na + nb
+      na = nb
+      nb = nth
+    }
+  }
+}

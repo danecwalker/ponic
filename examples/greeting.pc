@@ -1,0 +1,9 @@
+fn println(str) {
+  print(str, "\n")
+}
+
+const greet = fn(name) {
+  println("Hello " + name + "!")
+}
+
+greet("Ponic")

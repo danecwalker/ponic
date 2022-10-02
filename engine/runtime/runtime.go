@@ -27,6 +27,8 @@ func Run(node ast.Node, scope *object.Scope) object.Object {
 	case *ast.ConstStatement:
 		val := Run(node.Value, scope)
 		scope.Set(node.Name.Value, val, object.CONST)
+	case *ast.ForExpression:
+		return runForExpression(node, scope)
 	case *ast.ReturnStatement:
 		val := Run(node.ReturnValue, scope)
 		return &object.ReturnValue{Value: val}
@@ -43,6 +45,12 @@ func Run(node ast.Node, scope *object.Scope) object.Object {
 		right := Run(node.Right, scope)
 		return runUnop(node.Operator, right)
 	case *ast.BinOp:
+		if node.Operator == "=" || node.Operator == "+=" || node.Operator == "-=" || node.Operator == "*=" || node.Operator == "/=" || node.Operator == "%=" {
+			switch n := node.Left.(type) {
+			case *ast.Identifier:
+				return runRebind(n, node.Right, node.Operator, scope)
+			}
+		}
 		left := Run(node.Left, scope)
 		right := Run(node.Right, scope)
 		return runBinop(node.Operator, left, right)
@@ -72,6 +80,53 @@ func Run(node ast.Node, scope *object.Scope) object.Object {
 		return &object.Null{}
 	}
 
+	return &object.Null{}
+}
+
+func runRebind(left *ast.Identifier, right ast.Expression, operator string, scope *object.Scope) object.Object {
+	rightVal := Run(right, scope)
+	leftVal, ok := scope.Get(left.Value)
+	if !ok {
+		panic("Undefined variable " + left.Value)
+	}
+
+	if operator == "=" {
+		scope.Set(left.Value, rightVal, object.LET)
+		return &object.Null{}
+	}
+
+	switch leftVal := leftVal.(type) {
+	case *object.Integer:
+		switch rightVal := rightVal.(type) {
+		case *object.Integer:
+			switch operator {
+			case "+=":
+				scope.Set(left.Value, &object.Integer{Value: leftVal.Value + rightVal.Value}, object.LET)
+				return &object.Null{}
+			case "-=":
+				scope.Set(left.Value, &object.Integer{Value: leftVal.Value - rightVal.Value}, object.LET)
+				return &object.Null{}
+			case "*=":
+				scope.Set(left.Value, &object.Integer{Value: leftVal.Value * rightVal.Value}, object.LET)
+				return &object.Null{}
+			case "/=":
+				scope.Set(left.Value, &object.Integer{Value: leftVal.Value / rightVal.Value}, object.LET)
+				return &object.Null{}
+			case "%=":
+				scope.Set(left.Value, &object.Integer{Value: leftVal.Value % rightVal.Value}, object.LET)
+				return &object.Null{}
+			}
+		}
+	case *object.String:
+		switch rightVal := rightVal.(type) {
+		case *object.String:
+			switch operator {
+			case "+=":
+				scope.Set(left.Value, &object.String{Value: leftVal.Value + rightVal.Value}, object.LET)
+				return &object.Null{}
+			}
+		}
+	}
 	return &object.Null{}
 }
 
@@ -257,12 +312,37 @@ func runIfExpression(ie *ast.IfExpression, scope *object.Scope) object.Object {
 }
 
 func isTruthy(obj object.Object) bool {
-	switch obj {
-	case &object.Null{}:
+	switch obj.Type() {
+	case object.NULL:
 		return false
-	case &object.Boolean{Value: false}:
-		return false
-	default:
-		return true
+	case object.BOOLEAN:
+		switch obj.(*object.Boolean).Value {
+		case true:
+			return true
+		case false:
+			return false
+		}
 	}
+	return false
+}
+
+func runForExpression(fe *ast.ForExpression, s *object.Scope) object.Object {
+	scope := object.NewScope()
+	scope.Parent = s
+	var result object.Object
+	Run(fe.Initializer, scope)
+	for {
+		condition := Run(fe.Condition, scope)
+		if !isTruthy(condition) {
+			break
+		}
+
+		Run(fe.Post, scope)
+
+		result = Run(fe.Body, scope)
+		if _, ok := result.(*object.ReturnValue); ok {
+			break
+		}
+	}
+	return &object.Null{}
 }

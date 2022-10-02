@@ -106,9 +106,19 @@ func (l *lexer) Next() *Token {
 		}
 		return l.newToken(ASSIGN, string(lit))
 	case '+':
-		return l.newToken(PLUS, string(l.Consume()))
+		lit := string(l.Consume())
+		if l.Peek() == '=' {
+			lit += string(l.Consume())
+			return l.newToken(PLUS_ASSIGN, lit)
+		}
+		return l.newToken(PLUS, lit)
 	case '-':
-		return l.newToken(MINUS, string(l.Consume()))
+		lit := string(l.Consume())
+		if l.Peek() == '=' {
+			lit += string(l.Consume())
+			return l.newToken(MINUS_ASSIGN, lit)
+		}
+		return l.newToken(MINUS, lit)
 	case '!':
 		lit := string(l.Consume())
 		if l.Peek() == '=' {
@@ -117,10 +127,25 @@ func (l *lexer) Next() *Token {
 		}
 		return l.newToken(BANG, string(lit))
 	case '*':
+		lit := string(l.Consume())
+		if l.Peek() == '=' {
+			lit += string(l.Consume())
+			return l.newToken(ASTER_ASSIGN, lit)
+		}
 		return l.newToken(ASTER, string(l.Consume()))
 	case '%':
+		lit := string(l.Consume())
+		if l.Peek() == '=' {
+			lit += string(l.Consume())
+			return l.newToken(MOD_ASSIGN, lit)
+		}
 		return l.newToken(MOD, string(l.Consume()))
 	case '/':
+		lit := string(l.Consume())
+		if l.Peek() == '=' {
+			lit += string(l.Consume())
+			return l.newToken(SLASH_ASSIGN, lit)
+		}
 		return l.newToken(SLASH, string(l.Consume()))
 	case '<':
 		lit := string(l.Consume())

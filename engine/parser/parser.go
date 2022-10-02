@@ -46,12 +46,20 @@ func NewParser(l lexer.Lexer) Parser {
 
 	p.registerNud(lexer.FUNCTION, p.parseFunctionLiteral)
 	p.registerNud(lexer.IF, p.parseIfExpression)
+	p.registerNud(lexer.FOR, p.parseForExpression)
 
 	p.registerNud(lexer.MINUS, p.parsePrefixExpression)
 	p.registerNud(lexer.BANG, p.parsePrefixExpression)
 	p.registerNud(lexer.LPAREN, p.parseGroupedExpression)
 
 	p.registerLed(lexer.LPAREN, p.parseCallExpression)
+
+	p.registerLed(lexer.ASSIGN, p.parseInfixExpression)
+	p.registerLed(lexer.PLUS_ASSIGN, p.parseInfixExpression)
+	p.registerLed(lexer.MINUS_ASSIGN, p.parseInfixExpression)
+	p.registerLed(lexer.ASTER_ASSIGN, p.parseInfixExpression)
+	p.registerLed(lexer.SLASH_ASSIGN, p.parseInfixExpression)
+	p.registerLed(lexer.MOD_ASSIGN, p.parseInfixExpression)
 
 	p.registerLed(lexer.PLUS, p.parseInfixExpression)
 	p.registerLed(lexer.MINUS, p.parseInfixExpression)
@@ -195,22 +203,29 @@ const (
 	SUM         // +
 	PRODUCT     // *
 	PREFIX      // -X or !X
+	ASSIGN      // =
 	CALL        // myFunction(X)
 )
 
 var precedences = map[lexer.TokenType]int{
-	lexer.EQ:     EQUALS,
-	lexer.NOT_EQ: EQUALS,
-	lexer.LT_EQ:  EQUALS,
-	lexer.GT_EQ:  EQUALS,
-	lexer.LT:     LESSGREATER,
-	lexer.GT:     LESSGREATER,
-	lexer.PLUS:   SUM,
-	lexer.MINUS:  SUM,
-	lexer.SLASH:  PRODUCT,
-	lexer.ASTER:  PRODUCT,
-	lexer.MOD:    PRODUCT,
-	lexer.LPAREN: CALL,
+	lexer.EQ:           EQUALS,
+	lexer.NOT_EQ:       EQUALS,
+	lexer.LT_EQ:        EQUALS,
+	lexer.GT_EQ:        EQUALS,
+	lexer.LT:           LESSGREATER,
+	lexer.GT:           LESSGREATER,
+	lexer.PLUS:         SUM,
+	lexer.MINUS:        SUM,
+	lexer.SLASH:        PRODUCT,
+	lexer.ASTER:        PRODUCT,
+	lexer.MOD:          PRODUCT,
+	lexer.ASSIGN:       ASSIGN,
+	lexer.PLUS_ASSIGN:  ASSIGN,
+	lexer.MINUS_ASSIGN: ASSIGN,
+	lexer.ASTER_ASSIGN: ASSIGN,
+	lexer.SLASH_ASSIGN: ASSIGN,
+	lexer.MOD_ASSIGN:   ASSIGN,
+	lexer.LPAREN:       CALL,
 }
 
 func (p *parser) nextPrecedence() int {
@@ -435,4 +450,47 @@ func (p *parser) parseCallArguments() []ast.Expression {
 	p.eat()
 
 	return args
+}
+
+func (p *parser) parseForExpression() ast.Expression {
+	exp := &ast.ForExpression{Token: p.curToken}
+
+	if !p.isNext(lexer.LPAREN) {
+		return nil
+	}
+	p.eat()
+
+	if !p.isNext(lexer.LET) {
+		return nil
+	}
+
+	exp.Initializer = p.parseLetStatement()
+
+	exp.Condition = p.parseExpression(LOWEST)
+
+	if !p.isNext(lexer.SEMICOLON) {
+		return nil
+	}
+	p.eat()
+
+	exp.Post = p.parseExpressionStatement()
+
+	if !p.isNext(lexer.RPAREN) {
+		return nil
+	}
+	p.eat()
+
+	if !p.isNext(lexer.LBRACE) {
+		return nil
+	}
+	p.eat()
+
+	exp.Body = p.parseBlockStatement()
+
+	if !p.isNext(lexer.RBRACE) {
+		return nil
+	}
+	p.eat()
+
+	return exp
 }
